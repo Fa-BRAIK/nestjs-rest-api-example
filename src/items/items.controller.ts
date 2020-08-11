@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common'
 import { CreateItemDto } from './dto/create-item.dto'
 import { ItemsService } from './items.service'
-import { Item } from './interfaces/item.interface'
+import { Item } from './item.entity'
 
 @Controller('items')
 export class ItemsController {
@@ -13,22 +22,25 @@ export class ItemsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Item> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Item> {
     return await this.itemsService.findOne(id)
   }
 
-  // @Post('create')
-  // create(@Body() createItemDto: CreateItemDto): string {
-  //   return `name : ${createItemDto.name}, description : ${createItemDto.description}`
-  // }
+  @Post('create')
+  create(@Body() createItemDto: CreateItemDto): Promise<Item> {
+    return this.itemsService.create(createItemDto)
+  }
 
-  // @Put('update/:id')
-  // update(@Param('id') id, updateItemDto: CreateItemDto): string {
-  //   return `Update item with id ${id}`
-  // }
+  @Put('update/:id')
+  update(
+    @Param('id', ParseIntPipe) id,
+    @Body() updateItemDto: CreateItemDto,
+  ): Promise<Item> {
+    return this.itemsService.update(id, updateItemDto)
+  }
 
-  // @Delete('delete/:id')
-  // delete(@Param('id') id): string {
-  //   return `Delete item with id : ${id}`
-  // }
+  @Delete('delete/:id')
+  delete(@Param('id', ParseIntPipe) id): Promise<void> {
+    return this.itemsService.remove(id)
+  }
 }
