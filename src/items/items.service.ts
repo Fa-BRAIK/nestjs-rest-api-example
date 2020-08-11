@@ -1,34 +1,19 @@
 import { Injectable } from '@nestjs/common'
-import { Item } from './interfaces/item.interface'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { Item } from './item.entity'
 
 @Injectable()
 export class ItemsService {
-  private readonly _items: Item[] = [
-    {
-      id: 1,
-      name: 'name - 1',
-      description: 'a random description',
-      quantity: 10,
-    },
-    {
-      id: 2,
-      name: 'name - 2',
-      description: 'a random description',
-      quantity: 10,
-    },
-    {
-      id: 3,
-      name: 'name - 3',
-      description: 'a random description',
-      quantity: 10,
-    },
-  ]
+  constructor(
+    @InjectRepository(Item) private itemsRepository: Repository<Item>,
+  ) {}
 
-  findAll(): Item[] {
-    return this._items
+  async findAll(): Promise<Item[]> {
+    return await this.itemsRepository.find()
   }
 
-  findOne(id: number): Item {
-    return this._items.find(item => item.id == id)
+  async findOne(id: number): Promise<Item> {
+    return await this.itemsRepository.findOne(id)
   }
 }
